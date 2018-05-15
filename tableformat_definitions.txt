@@ -1,0 +1,10 @@
+<h1>TableFormat</h1>
+All variables integer
+
+Register A	- the main register, stuff is moved from elsewhere to it and from it to elsewhere
+Register B	- when extra data for command is needed (index of Array etc.)
+Register C, D	- processor inputs
+Register E	- processor output
+Array F [128]	- for miscellaneous storage
+ArrayDeque G, H	- FIFO for mass storage
+Stack I, J	- LIFO for mass storage

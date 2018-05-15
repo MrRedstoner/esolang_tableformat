@@ -1,5 +1,12 @@
 package esolang_tableformat;
 
-public class CellFormatToNumberConvertor {
+import org.apache.poi.ss.usermodel.Cell;
 
+public class CellFormatToNumberConvertor {
+	public static int getNumberFor(Cell c){
+		int out=0;
+		
+		
+		return out;
+	}
 }

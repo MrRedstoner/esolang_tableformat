@@ -3,7 +3,7 @@ package esolang_tableformat;
 import java.util.Arrays;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 
 public class CellFormatToNumberConvertor {
@@ -12,10 +12,46 @@ public class CellFormatToNumberConvertor {
 	
 	public static int getNumberFor(Cell c){
 		int out=0;
-		CellStyle cs=c.getCellStyle();
+		XSSFCellStyle cs=(XSSFCellStyle) c.getCellStyle();
 		
 		try {
-			XSSFColor front=(XSSFColor) cs.getFillForegroundColorColor();
+			XSSFColor back=cs.getFillForegroundColorColor();//actually is cell background
+			
+			byte[]backByte;
+			if(back!=null){
+				backByte=back.getRGB();
+			}else{
+				backByte=new byte[]{(byte) 255,(byte) 255,(byte) 255};
+			}
+			/*color is as: 0 > 0 ; 85 > 85 ; 170 > -86 ; 255 > -1 ; solvable by &0xFF */
+			short[]backShort=new short[3];
+			for(int i=0;i<backShort.length;i++){
+				backShort[i]=(short) (0xFF&backByte[i]);
+			}
+			
+			//System.out.println(Arrays.toString(backShort));
+			
+			for(int i=2;i>=0;i--){
+				short current=backShort[i];//partial color to process, starting from the least significant
+				int index=2-i;
+				index<<=1;//multiply by 2;
+				int powOf2=1<<index;//significance of partial color
+				//System.out.print(current+" "+powOf2);
+				for(int j=0;j<=3;j++){
+					int middle=BASE*j;
+					if(isInRange(current,middle,DIFF)){
+						//System.out.println(" "+j+" "+(j*powOf2));
+						out+=(j*powOf2);
+						break;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			XSSFColor front=cs.getFont().getXSSFColor();
 			
 			byte[]frontByte;
 			if(front!=null){
@@ -29,18 +65,19 @@ public class CellFormatToNumberConvertor {
 				frontShort[i]=(short) (0xFF&frontByte[i]);
 			}
 			
-			System.out.println(Arrays.toString(frontShort));
+			//System.out.println(Arrays.toString(frontShort));
 			
 			for(int i=2;i>=0;i--){
 				short current=frontShort[i];//partial color to process, starting from the least significant
 				int index=2-i;
 				index<<=1;//multiply by 2;
 				int powOf2=1<<index;//significance of partial color
+				powOf2<<=6;
 				//System.out.print(current+" "+powOf2);
 				for(int j=0;j<=3;j++){
 					int middle=BASE*j;
 					if(isInRange(current,middle,DIFF)){
-						//System.out.println(" "+j);
+						//System.out.println(" "+j+" "+(j*powOf2));
 						out+=(j*powOf2);
 						break;
 					}

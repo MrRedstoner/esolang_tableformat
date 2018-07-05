@@ -2,29 +2,11 @@ package esolang_tableformat;
 
 import java.util.Arrays;
 
-import org.apache.poi.POIXMLDocumentPart;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTBorder;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTColor;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTXf;
 
 public class CellFormatToNumberConvertor {
-	private static StylesTable mst;
-	
-	static void init(XSSFWorkbook workbook){
-		mst = null;
-		for (POIXMLDocumentPart part :workbook.getRelations()) {
-			if (part instanceof StylesTable) {
-				mst = (StylesTable) part;
-				break;
-			}
-		}
-	}
-	
 	public static final int DIFF=5;
 	public static final int BASE=85;
 	
@@ -105,33 +87,66 @@ public class CellFormatToNumberConvertor {
 			e.printStackTrace();
 		}
 		
-		try {//seems to get the / instead of the \
-			CTXf ctxf=cs.getCoreXf();
-			int borderIndex=(int) ctxf.getBorderId();
-			CTBorder ctb=mst.getBorderAt(borderIndex).getCTBorder();
-			CTColor slash=ctb.getDiagonal().getColor();
+		try {
+			XSSFColor under=cs.getBottomBorderXSSFColor();
 			
-			byte[]slashByte;
-			if(slash!=null){
-				slashByte=slash.getRgb();
+			byte[]underByte;
+			if(under!=null){
+				underByte=under.getRGB();
 			}else{
-				System.out.println("trouble");
-				slashByte=new byte[]{(byte) 255,(byte) 255,(byte) 255};
+				underByte=new byte[]{(byte) 255,(byte) 255,(byte) 255};
 			}
 			/*color is as: 0 > 0 ; 85 > 85 ; 170 > -86 ; 255 > -1 ; solvable by &0xFF */
-			short[]slashShort=new short[3];
-			for(int i=0;i<slashShort.length;i++){
-				slashShort[i]=(short) (0xFF&slashByte[i]);
+			short[]underShort=new short[3];
+			for(int i=0;i<underShort.length;i++){
+				underShort[i]=(short) (0xFF&underByte[i]);
 			}
 			
-			System.out.println(Arrays.toString(slashShort));
+			//System.out.println(Arrays.toString(underShort));
 			
 			for(int i=2;i>=0;i--){
-				short current=slashShort[i];//partial color to process, starting from the least significant
+				short current=underShort[i];//partial color to process, starting from the least significant
 				int index=2-i;
 				index<<=1;//multiply by 2;
 				int powOf2=1<<index;//significance of partial color
 				powOf2<<=12;
+				//System.out.print(current+" "+powOf2);
+				for(int j=0;j<=3;j++){
+					int middle=BASE*j;
+					if(isInRange(current,middle,DIFF)){
+						//System.out.println(" "+j+" "+(j*powOf2));
+						out+=(j*powOf2);
+						break;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			XSSFColor right=cs.getRightBorderXSSFColor();
+			
+			byte[]rightByte;
+			if(right!=null){
+				rightByte=right.getRGB();
+			}else{
+				rightByte=new byte[]{(byte) 255,(byte) 255,(byte) 255};
+			}
+			/*color is as: 0 > 0 ; 85 > 85 ; 170 > -86 ; 255 > -1 ; solvable by &0xFF */
+			short[]rightShort=new short[3];
+			for(int i=0;i<rightShort.length;i++){
+				rightShort[i]=(short) (0xFF&rightByte[i]);
+			}
+			
+			//System.out.println(Arrays.toString(underShort));
+			
+			for(int i=2;i>=0;i--){
+				short current=rightShort[i];//partial color to process, starting from the least significant
+				int index=2-i;
+				index<<=1;//multiply by 2;
+				int powOf2=1<<index;//significance of partial color
+				powOf2<<=18;
 				System.out.print(current+" "+powOf2);
 				for(int j=0;j<=3;j++){
 					int middle=BASE*j;

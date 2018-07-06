@@ -14,7 +14,7 @@ public class HelpTesting {
 		XSSFWorkbook workbook = new XSSFWorkbook(excelFile);
         Sheet datatypeSheet = workbook.getSheetAt(0);
         
-        for(int i=37;i<49;i++){
+        for(int i=1;i<49;i++){
         	Cell c=datatypeSheet.getRow(i).getCell(1);
         	System.out.println(datatypeSheet.getRow(i).getCell(0).getStringCellValue());
         	System.out.println(CellFormatToNumberConvertor.getNumberFor(c));

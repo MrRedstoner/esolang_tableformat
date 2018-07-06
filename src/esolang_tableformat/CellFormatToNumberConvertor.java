@@ -147,11 +147,11 @@ public class CellFormatToNumberConvertor {
 				index<<=1;//multiply by 2;
 				int powOf2=1<<index;//significance of partial color
 				powOf2<<=18;
-				System.out.print(current+" "+powOf2);
+				//System.out.print(current+" "+powOf2);
 				for(int j=0;j<=3;j++){
 					int middle=BASE*j;
 					if(isInRange(current,middle,DIFF)){
-						System.out.println(" "+j+" "+(j*powOf2));
+						//System.out.println(" "+j+" "+(j*powOf2));
 						out+=(j*powOf2);
 						break;
 					}

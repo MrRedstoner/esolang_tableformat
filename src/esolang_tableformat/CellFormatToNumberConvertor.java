@@ -1,7 +1,5 @@
 package esolang_tableformat;
 
-import java.util.Arrays;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
@@ -21,7 +19,7 @@ public class CellFormatToNumberConvertor {
 			if(back!=null){
 				backByte=back.getRGB();
 			}else{
-				backByte=new byte[]{(byte) 255,(byte) 255,(byte) 255};
+				backByte=new byte[]{0,0,0};
 			}
 			/*color is as: 0 > 0 ; 85 > 85 ; 170 > -86 ; 255 > -1 ; solvable by &0xFF */
 			short[]backShort=new short[3];
@@ -57,7 +55,7 @@ public class CellFormatToNumberConvertor {
 			if(front!=null){
 				frontByte=front.getRGB();
 			}else{
-				frontByte=new byte[]{(byte) 255,(byte) 255,(byte) 255};
+				frontByte=new byte[]{0,0,0};
 			}
 			/*color is as: 0 > 0 ; 85 > 85 ; 170 > -86 ; 255 > -1 ; solvable by &0xFF */
 			short[]frontShort=new short[3];
@@ -94,7 +92,7 @@ public class CellFormatToNumberConvertor {
 			if(under!=null){
 				underByte=under.getRGB();
 			}else{
-				underByte=new byte[]{(byte) 255,(byte) 255,(byte) 255};
+				underByte=new byte[]{0,0,0};
 			}
 			/*color is as: 0 > 0 ; 85 > 85 ; 170 > -86 ; 255 > -1 ; solvable by &0xFF */
 			short[]underShort=new short[3];
@@ -131,7 +129,7 @@ public class CellFormatToNumberConvertor {
 			if(right!=null){
 				rightByte=right.getRGB();
 			}else{
-				rightByte=new byte[]{(byte) 255,(byte) 255,(byte) 255};
+				rightByte=new byte[]{0,0,0};
 			}
 			/*color is as: 0 > 0 ; 85 > 85 ; 170 > -86 ; 255 > -1 ; solvable by &0xFF */
 			short[]rightShort=new short[3];

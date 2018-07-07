@@ -1,7 +1,7 @@
 <h1>TableFormat</h1>
-Starts in cell A1
+Starts in cell A1 going right
 Halts when out of the range of the table or when halt command is encountered
-Color has to be explicitly set otherwise returns null, in that case #FFFFFF is assumed
+Color has to be explicitly set otherwise returns null, in that case #000000 is assumed
 All variables integer
 
 Register A	- the main register, stuff is moved from elsewhere to it and from it to elsewhere

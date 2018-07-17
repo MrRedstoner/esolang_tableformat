@@ -140,10 +140,14 @@ public class EsolangMachine {
 					memory.a=memory.e;
 				}break;
 				case 17:{//move to F
-					memory.f[memory.b]=memory.a;
+					try {
+						memory.f[memory.b]=memory.a;
+					} catch (Exception e) {}
 				}break;
 				case 18:{//move from F
-					memory.a=memory.f[memory.b];
+					try {
+						memory.a=memory.f[memory.b];
+					} catch (Exception e) {}
 				}break;
 				case 19:{//move to G
 					memory.g.add(memory.a);

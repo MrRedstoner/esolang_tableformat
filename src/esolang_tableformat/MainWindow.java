@@ -4,6 +4,8 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,15 +25,23 @@ public class MainWindow {
 
 	private JFrame frame;
 	private JTextField txt;
-	private JFileChooser jfc;
-	private File program;
 	private JLabel lblFile;
 	private JLabel lblSpreadsheet;
 	private JComboBox<String> comboBox;
-	private XSSFWorkbook workbook;
 	private JButton btnStart;
 	private JButton btnPause;
+	private JButton btnConfirm;
+	private JLabel label;
+	private JButton btnDelete;
+	private JTextArea textArea;
+	
+	private JFileChooser jfc;
+	
+	private File program;
+	private XSSFWorkbook workbook;
 	private EsolangMachine machine;
+	private Input input;
+	private Output output;
 	
 	/**
 	 * Launch the application.
@@ -62,7 +72,7 @@ public class MainWindow {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setTitle("TableFormat by MrRedstoner");
-		frame.setBounds(100, 100, 450, 400);
+		frame.setBounds(100, 100, 450, 430);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -143,21 +153,115 @@ public class MainWindow {
 		frame.getContentPane().add(btnStop);
 		
 		txt = new JTextField();
-		txt.setEnabled(false);
+		txt.addKeyListener(new KeyAdapter() {
+			@Override public void keyPressed(KeyEvent arg0) {
+				if(arg0.getKeyCode()==KeyEvent.VK_ENTER){
+					onConfirmed();
+				}
+			}
+		});
 		txt.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		txt.setBounds(10, 164, 414, 25);
+		txt.setBounds(10, 164, 284, 25);
 		frame.getContentPane().add(txt);
-		txt.setColumns(10);
+		txt.setColumns(50);
 		
-		JTextArea textArea = new JTextArea();
+		input=new Input(){
+			@Override public int readCharacter() {
+				while(label.getText().length()<=0){
+					try {
+						Thread.sleep(10);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				String s=label.getText();
+				label.setText(s.substring(1));
+				return (int)s.charAt(0);
+			}
+
+			@Override public int readNumber() {
+				boolean madeIt=false;
+				int out=0;
+				while(!madeIt){
+					try {
+						Thread.sleep(10);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+					try {
+						if(label.getText().length()<=0)continue;
+						String s0=label.getText();
+						String[] s1=s0.split("\\s");
+						label.setText(s0.substring(s1[0].length()+1));
+						s0=s1[0];
+						out=Integer.parseInt(s0);
+						madeIt=true;
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				return out;
+			}
+		};
+		
+		textArea = new JTextArea();
 		textArea.setEnabled(false);
-		textArea.setBounds(10, 200, 414, 150);
+		textArea.setBounds(10, 236, 414, 144);
 		frame.getContentPane().add(textArea);
+		
+		output=new Output(){
+			@Override public void writeCharacter(int c) {
+				textArea.setText(textArea.getText()+((char)c));
+			}
+
+			@Override public void writeNumber(int i) {
+				textArea.setText(textArea.getText()+i);
+			}
+		};
 		
 		btnPause = new JButton("Pause");
 		btnPause.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		btnPause.setEnabled(false);
 		btnPause.setBounds(150, 103, 134, 50);
 		frame.getContentPane().add(btnPause);
+		
+		btnConfirm = new JButton("Confirm");
+		btnConfirm.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				onConfirmed();
+			}
+		});
+		btnConfirm.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		btnConfirm.setBounds(304, 164, 120, 25);
+		frame.getContentPane().add(btnConfirm);
+		
+		label = new JLabel("");
+		label.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		label.setBounds(10, 200, 284, 25);
+		frame.getContentPane().add(label);
+		
+		btnDelete = new JButton("Delete");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println(label.getText());
+				label.setText("");
+				btnDelete.setEnabled(false);
+			}
+		});
+		btnDelete.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		btnDelete.setEnabled(false);
+		btnDelete.setBounds(304, 200, 120, 25);
+		frame.getContentPane().add(btnDelete);
+	}
+
+	protected void onConfirmed() {
+		if(label.getText().length()==0){
+			if(txt.getText().length()>0){
+				label.setText(txt.getText());
+				txt.setText("");
+				btnDelete.setEnabled(true);
+			}
+		}
 	}
 }

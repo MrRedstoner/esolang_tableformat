@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import javax.swing.JToggleButton;
 
 public class MainWindow {
 
@@ -34,6 +35,9 @@ public class MainWindow {
 	private JLabel label;
 	private JButton btnDelete;
 	private JTextArea textArea;
+	private JButton btnStop;
+	private JButton btnClear;
+	private JToggleButton tglbtnDebug;
 	
 	private JFileChooser jfc;
 	
@@ -42,6 +46,8 @@ public class MainWindow {
 	private EsolangMachine machine;
 	private Input input;
 	private Output output;
+	private Thread runner;
+	private boolean on=false;
 	
 	/**
 	 * Launch the application.
@@ -72,7 +78,7 @@ public class MainWindow {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setTitle("TableFormat by MrRedstoner");
-		frame.setBounds(100, 100, 450, 430);
+		frame.setBounds(100, 100, 450, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -130,14 +136,48 @@ public class MainWindow {
 		lblSpreadsheet.setBounds(10, 57, 138, 35);
 		frame.getContentPane().add(lblSpreadsheet);
 		
+		runner=new Thread(){
+			public void run(){
+				while(true){
+					if (on) {
+						try {
+							boolean b = machine.step();
+							if (b) {
+								onStop();
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}else{
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		};
+		runner.setDaemon(true);
+		
 		btnStart = new JButton("Start");
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(machine==null){
 					//start running
-					machine=new EsolangMachine(workbook.getSheet((String)comboBox.getSelectedItem()),null,null);
+					machine=new EsolangMachine(workbook.getSheet((String)comboBox.getSelectedItem()),input,output);
+					machine.setDebug(tglbtnDebug.isSelected());
+					
+					btnStop.setEnabled(true);
+					btnPause.setEnabled(true);
+					btnStart.setEnabled(false);
+					on=true;
+					
+					if(!runner.isAlive())runner.start();
 				}else{
 					//it was paused
+					btnPause.setEnabled(true);
+					on=true;
 				}
 			}
 		});
@@ -146,7 +186,12 @@ public class MainWindow {
 		btnStart.setBounds(10, 103, 130, 50);
 		frame.getContentPane().add(btnStart);
 		
-		JButton btnStop = new JButton("Stop");
+		btnStop = new JButton("Stop");
+		btnStop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onStop();
+			}
+		});
 		btnStop.setEnabled(false);
 		btnStop.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		btnStop.setBounds(294, 103, 130, 50);
@@ -206,8 +251,8 @@ public class MainWindow {
 		};
 		
 		textArea = new JTextArea();
-		textArea.setEnabled(false);
-		textArea.setBounds(10, 236, 414, 144);
+		textArea.setEditable(false);
+		textArea.setBounds(10, 236, 414, 153);
 		frame.getContentPane().add(textArea);
 		
 		output=new Output(){
@@ -221,6 +266,12 @@ public class MainWindow {
 		};
 		
 		btnPause = new JButton("Pause");
+		btnPause.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				on=false;
+				btnStart.setEnabled(true);
+			}
+		});
 		btnPause.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		btnPause.setEnabled(false);
 		btnPause.setBounds(150, 103, 134, 50);
@@ -253,9 +304,31 @@ public class MainWindow {
 		btnDelete.setEnabled(false);
 		btnDelete.setBounds(304, 200, 120, 25);
 		frame.getContentPane().add(btnDelete);
+		
+		btnClear = new JButton("Clear console");
+		btnClear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textArea.setText("");
+			}
+		});
+		btnClear.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		btnClear.setBounds(158, 400, 266, 50);
+		frame.getContentPane().add(btnClear);
+		
+		tglbtnDebug = new JToggleButton("Debug");
+		tglbtnDebug.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					machine.setDebug(tglbtnDebug.isSelected());
+				} catch (Exception e1) {}
+			}
+		});
+		tglbtnDebug.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		tglbtnDebug.setBounds(10, 400, 138, 50);
+		frame.getContentPane().add(tglbtnDebug);
 	}
 
-	protected void onConfirmed() {
+	private void onConfirmed() {
 		if(label.getText().length()==0){
 			if(txt.getText().length()>0){
 				label.setText(txt.getText());
@@ -263,5 +336,13 @@ public class MainWindow {
 				btnDelete.setEnabled(true);
 			}
 		}
+	}
+	
+	private void onStop() {
+		btnStop.setEnabled(false);
+		btnPause.setEnabled(false);
+		on=false;
+		machine=null;
+		btnStart.setEnabled(true);
 	}
 }

@@ -61,6 +61,7 @@ public class EsolangMachine {
 	private long pauseUntil;
 	private Input in;
 	private Output out;
+	private boolean debug=false;
 	
 	EsolangMachine(XSSFSheet sheet,Input in,Output out){
 		this.sheet=sheet;
@@ -73,6 +74,10 @@ public class EsolangMachine {
 		special=Special.NONE;
 	}
 	
+	void setDebug(boolean b){
+		debug=b;
+	}
+	
 	boolean step(){//returns true for halt
 		if(special==Special.PAUSE){
 			if(System.currentTimeMillis()>=pauseUntil){
@@ -83,6 +88,10 @@ public class EsolangMachine {
 		
 		XSSFCell cell=sheet.getRow(position[0]).getCell(position[1]);
 		int value=CellFormatToNumberConvertor.getNumberFor(cell);
+		
+		if(debug){
+			System.out.println(value);
+		}
 		
 		if(special==Special.NEXT_AS_NUMBER){
 			memory.a=value;
@@ -227,16 +236,16 @@ public class EsolangMachine {
 		
 		switch(direction){
 			case DOWN:{
-				position[1]++;
-			}break;
-			case LEFT:{
-				position[0]--;
-			}break;
-			case RIGHT:{
 				position[0]++;
 			}break;
-			case UP:{
+			case LEFT:{
 				position[1]--;
+			}break;
+			case RIGHT:{
+				position[1]++;
+			}break;
+			case UP:{
+				position[0]--;
 			}break;
 		}
 		

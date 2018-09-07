@@ -260,6 +260,7 @@ public class MainWindow {
 		textArea = new JTextArea();
 		textArea.setEditable(false);
 		textArea.setBounds(10, 236, 414, 153);
+		textArea.setLineWrap(true);
 		frame.getContentPane().add(textArea);
 		
 		output=new Output(){

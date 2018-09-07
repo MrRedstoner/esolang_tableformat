@@ -1,11 +1,11 @@
 package esolang_tableformat;
 
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class NumberToFormatUtil {
 
 	public static void main(String[] args) {
+		@SuppressWarnings("resource")
 		Scanner sc=new Scanner(System.in);
 		
 		while(true){

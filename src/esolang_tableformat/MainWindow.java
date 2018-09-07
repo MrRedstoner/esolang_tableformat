@@ -17,10 +17,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import javax.swing.JToggleButton;
 
 public class MainWindow {
 
@@ -81,6 +81,7 @@ public class MainWindow {
 		frame.setBounds(100, 100, 450, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		frame.setResizable(false);
 		
 		jfc=new JFileChooser();
 		jfc.setFileFilter(new FileNameExtensionFilter("Excel files","xlsx"));
@@ -238,7 +239,13 @@ public class MainWindow {
 						if(label.getText().length()<=0)continue;
 						String s0=label.getText();
 						String[] s1=s0.split("\\s");
-						label.setText(s0.substring(s1[0].length()+1));
+						int sublen;
+						if(s1.length<=1){
+							sublen=s1[0].length();
+						}else{
+							sublen=s1[0].length()+1;
+						}
+						label.setText(s0.substring(sublen));
 						s0=s1[0];
 						out=Integer.parseInt(s0);
 						madeIt=true;
@@ -295,7 +302,6 @@ public class MainWindow {
 		btnDelete = new JButton("Delete");
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(label.getText());
 				label.setText("");
 				btnDelete.setEnabled(false);
 			}

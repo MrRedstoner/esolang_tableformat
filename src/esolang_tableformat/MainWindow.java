@@ -23,7 +23,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class MainWindow {
-
 	private JFrame frame;
 	private JTextField txt;
 	private JLabel lblFile;
@@ -222,6 +221,7 @@ public class MainWindow {
 				}
 				String s=label.getText();
 				label.setText(s.substring(1));
+				if(tglbtnDebug.isSelected())System.out.println("char read: "+s.charAt(0));
 				return (int)s.charAt(0);
 			}
 
@@ -253,6 +253,7 @@ public class MainWindow {
 						e.printStackTrace();
 					}
 				}
+				if(tglbtnDebug.isSelected())System.out.println("num read: "+out);
 				return out;
 			}
 		};
@@ -327,6 +328,7 @@ public class MainWindow {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					machine.setDebug(tglbtnDebug.isSelected());
+					System.out.println("debug: "+tglbtnDebug.isSelected());
 				} catch (Exception e1) {}
 			}
 		});

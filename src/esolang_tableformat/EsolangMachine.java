@@ -1,6 +1,7 @@
 package esolang_tableformat;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Stack;
 
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -47,6 +48,19 @@ public class EsolangMachine {
 		int[] f;
 		ArrayDeque<Integer> g,h;
 		Stack<Integer> i,j;
+		
+		public void print() {
+			System.out.println("a: "+a);
+			System.out.println("b: "+b);
+			System.out.println("c: "+c);
+			System.out.println("d: "+d);
+			System.out.println("e: "+e);
+			System.out.println("f: "+Arrays.toString(f));
+			System.out.println("g: "+g.toString());
+			System.out.println("h: "+h.toString());
+			System.out.println("i: "+i.toString());
+			System.out.println("j: "+j.toString());
+		}
 	}
 	
 	private enum Special{
@@ -87,6 +101,10 @@ public class EsolangMachine {
 		}
 		
 		XSSFCell cell=sheet.getRow(position[0]).getCell(position[1]);
+		if(cell==null){
+			onHalt();
+			return true;
+		}
 		int value=CellFormatToNumberConvertor.getNumberFor(cell);
 		
 		if(debug){
@@ -229,6 +247,7 @@ public class EsolangMachine {
 					pauseUntil=System.currentTimeMillis()+memory.a;
 				}break;
 				case 38:{//end
+					onHalt();
 					return true;
 				}
 			}
@@ -250,5 +269,9 @@ public class EsolangMachine {
 		}
 		
 		return false;
+	}
+	
+	private void onHalt(){
+		if(debug)memory.print();
 	}
 }
